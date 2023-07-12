@@ -1,0 +1,82 @@
+import random
+
+# Function to draw the game board
+def draw_board(board):
+    print("-------------")
+    print("| " + board[0] + " | " + board[1] + " | " + board[2] + " |")
+    print("-------------")
+    print("| " + board[3] + " | " + board[4] + " | " + board[5] + " |")
+    print("-------------")
+    print("| " + board[6] + " | " + board[7] + " | " + board[8] + " |")
+    print("-------------")
+
+# Function to check if a player has won
+def check_winner(board, player):
+    winning_combinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
+        [0, 4, 8], [2, 4, 6]  # Diagonals
+    ]
+    for combo in winning_combinations:
+        if board[combo[0]] == board[combo[1]] == board[combo[2]] == player:
+            return True
+    return False
+
+# Function to make AI's move
+def ai_move(board, ai_player, human_player):
+    # Check for a winning move
+    for i in range(9):
+        if board[i] == ' ':
+            board[i] = ai_player
+            if check_winner(board, ai_player):
+                return i
+            else:
+                board[i] = ' '  # Undo the move
+
+    # Check for a blocking move
+    for i in range(9):
+        if board[i] == ' ':
+            board[i] = human_player
+            if check_winner(board, human_player):
+                return i
+            else:
+                board[i] = ' '  # Undo the move
+
+    # Choose a random available spot
+    while True:
+        move = random.randint(0, 8)
+        if board[move] == ' ':
+            return move
+
+# Function to play the game
+def play_game():
+    board = [' '] * 9
+    human_player = 'X'
+    ai_player = 'O'
+    current_player = human_player
+
+    while True:
+        if current_player == human_player:
+            draw_board(board)
+            move = int(input("Enter your move (0-8): "))
+            if board[move] != ' ':
+                print("Invalid move. Try again.")
+                continue
+        else:
+            move = ai_move(board, ai_player, human_player)
+
+        board[move] = current_player
+
+        if check_winner(board, current_player):
+            draw_board(board)
+            print(current_player + " wins!")
+            break
+        elif ' ' not in board:
+            draw_board(board)
+            print("It's a tie!")
+            break
+
+        current_player = ai_player if current_player == human_player else human_player
+
+# Start the game
+play_game()
